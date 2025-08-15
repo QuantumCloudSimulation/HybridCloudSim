@@ -1,149 +1,90 @@
+# QCloudSim – Hybrid Quantum–HPC Cloud Simulation Framework
 
-# Quantum Cloud Simulation Plus (QCloudSim+)
+QCloudSim is a Python-based simulation framework for modeling, executing, and analyzing hybrid quantum–HPC workloads.  
+It enables researchers to evaluate **scheduling strategies**, **resource allocation policies**, and **device utilization trends** in environments that combine noisy Quantum Processing Units (QPUs) with classical High-Performance Computing (HPC) resources such as CPUs and GPUs.
 
+The framework supports:
+- **Heterogeneous resources**: QPUs, CPUs, and memory bandwidth modeling.
+- **Hybrid workflows**: Alternating quantum and classical computation stages.
+- **Custom scheduling**: Parallel, sequential, or user-defined scheduling algorithms.
+- **Noise-aware modeling**: Fidelity and noise considerations for realistic QPU behavior.
+- **Detailed logging & visualization**: Gantt charts, utilization time series, and average resource usage.
 
-This repository is extended from the SigSim2025 artifact: a digital‑twin simulation of a quantum cloud environment, including event‑driven job brokering, dynamic/predefined job feeds, and device maintenance cycles. QCloudSim+ is a hybrid quantum cloud and high-performance computing cloud simulation framework. 
+---
 
-## Prerequisites
+## 📦 Features
 
-- Git  
-- Docker (recommended) or Python 3.8+
+- **Configurable Devices**
+  - Built-in presets for quantum devices (e.g., IBM\_Kawasaki, IBM\_Kyiv).
+  - Built-in presets for classical CPUs (e.g., AMD EPYC 9654, NVIDIA Grace Hopper).
+  - Adjustable qubit counts, CPU cores, and memory bandwidth capacities.
 
-## Cloning the repository
-To clone the repository, run the following command. 
+- **Workload Management**
+  - Supports job dispatch from CSV files or generated workloads.
+  - Tracks arrival, start, finish times for each device stage.
+  - Measures per-resource utilization over time.
+
+- **Visualization Tools**
+  - **Gantt Charts** – visualize execution phases across devices.
+  - **Utilization Time Series** – track CPU, QPU, and memory bandwidth usage.
+  - **Average Utilization Bar Charts** – compare overall resource demands.
+
+---
+
+## 🛠 Installation
+
+Clone the repository:
+
 ```bash
-git clone https://github.com/quantumcloudsim/SigSim2025.git
+git clone https://github.com/yourusername/QCloudSim.git
+cd QCloudSim
 ```
 
-## Python Environment (if not using Docker)
 
-1. **Create & activate a virtual environment**  
-   For macOS/Linux, run the following commands: 
-   ```bash
-   cd SigSim2025
-   python3 -m venv .venv
-   source .venv/bin/activate       # macOS/Linux
-   ```
-   For Windows PowerShell, run the following: 
-   ```bash
-   cd SigSim2025
-   python3 -m venv .venv
-   .venv\Scripts\Activate.ps1      # Windows PowerShell
-   ```
-3.	**Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-3.	**Run Use‑Case scripts**
-   ```bash
-   python3 Section-6-Use-case-1.py
-   python3 Section-6-Use-case-2.py
-   ```
-## Containerized Artifact (using Docker)
-We also generated an image for this work and made it public. You can fetch the container and reproduce the experiments via Docker.
-
-1. **Clone the repository**
-   ```bash 
-   git clone https://github.com/quantumcloudsim/SigSim2025.git
-   cd SigSim2025
-   ```
-2. **Pull the container image**
-
-   ```bash
-   docker pull ghcr.io/quantumcloudsim/sigsim2025:latest
-   ```
-3. **Run Use-Case 1**
-
-    ```bash
-    docker run --rm ghcr.io/quantumcloudsim/sigsim2025:latest \
-    python Section-6-Use-case-1.py
-    ```
-3. **Run Use-Case 2**
-
-    ```bash
-    docker run --rm ghcr.io/quantumcloudsim/sigsim2025:latest \
-    python Section-6-Use-case-2.py
-    ```
-## Repository Structure
-
-   ```bash
-      SigSim2025/
-      ├── Dockerfile
-      ├── README.md
-      ├── requirements.txt
-      ├── qcloud.py
-      ├── Section-6-Use-case-1.py
-      ├── Section-6-Use-case-2.py
-      ├── QCloud/                  # Core simulation code
-      ├── configs/                 # Configuration files
-      ├── results/                 # Experiment outputs
-      ├── synth_job_batches/       # Job definitions
-      └── utility_functions/       # Helper scripts
-   ```
-
-## Example Code
-
-This example demonstrates how to set up and run a simulation using the QCloud framework. The code initializes a device (using the IBM_Kawasaki class) and runs a simulation environment (QCloudSimEnv) with a custom job generation model. The simulation runs until a specified time limit.
-
-1.	**Prepare the Environment:**
-Make sure you have created a virtual environment and installed all required packages.
-
-2.	**Run the Simulation:**
-Save the following sample code in a Python file (e.g., simulate.py):
-
-   ```python
-   from QCloud import *
-
-   ibm_kawasaki = IBM_Kawasaki(env=None, name="ibm_kawasaki", printlog=True)
-   qcloudsimenv = QCloudSimEnv(
-      devices=[ibm_kawasaki],
-      broker_class=ParallelBroker,
-      job_feed_method="generator",
-      job_generation_model=lambda: random.expovariate(lambd=0.1)
-   )
-   qcloudsimenv.run(until=100)
-   ```
-3.	**Observe the Output:**
-The simulation will execute, logging events to your console (as specified by printlog=True). You can review the simulation steps and results, which might include job scheduling, device processing, and more depending on how the QCloud framework is designed. If you choose to print the log, the output looks somewhat a like: 
+Below is a minimal example of running a hybrid simulation with two QPUs and two CPUs.
 
 ```
-0.87: ibm_kawasaki received job #1 requiring 10 qubits.
-0.87: Job #1 will take 199.5885 sim-mins on ibm_kawasaki.
-20.03: ibm_kawasaki received job #2 requiring 10 qubits.
-20.03: Job #2 will take 205.3736 sim-mins on ibm_kawasaki.
-37.74: ibm_kawasaki received job #3 requiring 17 qubits.
-37.74: Job #3 will take 165.9724 sim-mins on ibm_kawasaki.
-43.35: ibm_kawasaki received job #4 requiring 6 qubits.
-43.35: Job #4 will take 69.5052 sim-mins on ibm_kawasaki.
-50.16: ibm_kawasaki received job #5 requiring 15 qubits.
-50.16: Job #5 is waiting for ibm_kawasaki.
-60.16: Job #5 is waiting for ibm_kawasaki.
-...
-...
+python
+
+from QCloud import *
+
+PRINTLOG = False
+
+# Devices
+ibm_kawasaki = IBM_Kawasaki(env=None, name="QPU-1", printlog=PRINTLOG)
+ibm_kyiv     = IBM_Kyiv(env=None, name="QPU-2", printlog=PRINTLOG)
+cpu1         = CPU("CPU-1", env=None)
+cpu2         = CPU("CPU-2", env=None)
+
+# Hybrid environment
+sim_env = HybridCloudSimEnv(
+    qpu_devices=[ibm_kawasaki, ibm_kyiv],
+    cpu_devices=[cpu1, cpu2],
+    broker_class=ParallelBroker,
+    job_feed_method='dispatcher',
+    file_path='synth_job_batches/10-job.csv', 
+    job_generation_model=None, 
+    printlog=PRINTLOG
+)
+
+# Run the simulation
+sim_env.run()
 ```
-**Code Explanation**
 
--	IBM_Kawasaki Initialization:
-   -	env=None: No specific environment passed during initialization.
-   -	name="ibm_kawasaki": Assigns a name to the device instance.
-   -	printlog=True: Enables logging to standard output.
--	QCloudSimEnv Setup:
-   -	devices=[ibm_kawasaki]: Registers the device to be used in the simulation.
-   -	broker_class=ParallelBroker: Uses the ParallelBroker class to manage job distribution.
-   -	job_feed_method="generator": Configures the environment to generate jobs using a generator.
-   -	job_generation_model=lambda: random.expovariate(lambd=0.1): Defines a job generation model where jobs arrive following an exponential distribution.
--	qcloudsimenv.run(until=100): Runs the simulation for 100 time units. You can modify this value to run the simulation for a different period.
-
-
-## Citation 
-If you use this artifact in your work, please cite:
-  
-   ```
-     @misc{SigSim2025,
-       author       = {A Digital Twin of Scalable Quantum Clouds},
-       title        = {{Submission to SigSim2025}},
-       year         = {2025},
-       doi          = {10.5281/zenodo.15099199},
-       howpublished = {\url{https://github.com/quantumcloudsim/SigSim2025.git}}
-     }
-   ```
+Repository Structure
+```
+QCloudSim/
+│
+├── QCloud/                 # Core framework package
+│   ├── devices.py          # Device definitions (QPU, CPU, etc.)
+│   ├── dependencies.py     # Presets and constants
+│   ├── __init__.py         # Unified imports
+│   ├── hybridcloudsimenv.py# Hybrid simulation environment
+│   ├── brokers.py          # Scheduling/broker logic
+│   └── utils.py            # Utility functions
+│
+├── synth_job_batches/      # Example job CSV files
+├── Images/                 # Example plots
+├── requirements.txt        # Python dependencies
+└── README.md               # This file
+```
