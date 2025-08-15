@@ -43,8 +43,7 @@ cd QCloudSim
 
 Below is a minimal example of running a hybrid simulation with two QPUs and two CPUs.
 
-```
-python
+```python
 
 from QCloud import *
 
